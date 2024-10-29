@@ -37,3 +37,8 @@ mongo-express:
       - api-network
     depends_on:
       - mongodb   
+
+networks:
+  api-network:
+    external: true
+    name: 'mongo-network'
