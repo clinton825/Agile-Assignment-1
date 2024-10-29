@@ -4,4 +4,79 @@ services:
     container_name: movies-api
     ports:
       - '9000:9000'
-    
+    environment:
+      - MONGODB_URI=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017/?authSource=admin
+      - REDIS_URI=redis://redis
+      - ENABLE_WRITING_HANDLERS=false
+    networks:
+      - api-network
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    image: mongo:8.0-rc
+    container_name: mongoDB
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    networks:
+      - api-network
+    volumes:
+      - ./data:/data/db
+
+  mongo-express:
+    image: mongo-express:1.0-20-alpine3.19
+    container_name: express
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - api-network
+    depends_on:
+      - mongodb
+    profiles:
+      - dev
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - api-network
+
+  mongodb-seed:
+    image: mongo:8.0-rc
+    container_name: mongodb-seed
+    networks:
+      - api-network
+    depends_on:
+      - mongodb
+    volumes:
+      - ./seeding.json:/seeding.json
+    command: >
+      mongoimport --host mongodb
+      --db tmdb_movies
+      --collection movies
+      --authenticationDatabase admin
+      --username ${MONGODB_USERNAME}
+      --password ${MONGODB_PASSWORD}
+      --drop
+      --jsonArray
+      --file /seeding.json
+
+    profiles:
+      - dev
+
+volumes:
+  data:
+
+networks:
+  api-network:
+    external: true
+    name: 'mongo-network'
