@@ -38,6 +38,8 @@ mongo-express:
     depends_on:
       - mongodb  
 
+profiles:
+      - dev
 redis:
     image: redis:alpine
     container_name: redis
@@ -66,6 +68,11 @@ mongodb-seed:
       --jsonArray
       --file /seeding.json
 
+profiles:
+      - dev
+
+volumes:
+  data:
 
 
 networks:
