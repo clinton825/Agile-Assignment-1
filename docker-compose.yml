@@ -13,3 +13,27 @@ services:
     depends_on:
       - mongodb
       - redis
+  mongodb:
+    image: mongo:8.0-rc
+  container_name: mongoDB
+  environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+  networks:
+      - api-network
+  volumes:
+      - ./data:/data/db
+mongo-express:
+    image: mongo-express:1.0-20-alpine3.19
+    container_name: express
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - api-network
+    depends_on:
+      - mongodb   
