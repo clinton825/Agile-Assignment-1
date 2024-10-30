@@ -10,6 +10,7 @@ services:
       - ENABLE_WRITING_HANDLERS=false
     networks:
       - api-network
+      - redis-network  
     depends_on:
       - mongodb
       - redis
@@ -22,6 +23,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
     networks:
       - api-network
+      - mongodb-network
     volumes:
       - ./data:/data/db
 
@@ -36,7 +38,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_PASSWORD}
       - ME_CONFIG_MONGODB_SERVER=mongodb
     networks:
-      - api-network
+       - mongodb-network
     depends_on:
       - mongodb
     profiles:
@@ -48,13 +50,13 @@ services:
     ports:
       - '6379:6379'
     networks:
-      - api-network
+      - redis-network  
 
   mongodb-seed:
     image: mongo:8.0-rc
     container_name: mongodb-seed
     networks:
-      - api-network
+      - mongodb-network
     depends_on:
       - mongodb
     volumes:
@@ -69,7 +71,6 @@ services:
       --drop
       --jsonArray
       --file /seeding.json
-
     profiles:
       - dev
 
@@ -80,3 +81,6 @@ networks:
   api-network:
     external: true
     name: 'mongo-network'
+  redis-network:   
+    external: false
+  mongodb-network:
