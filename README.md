@@ -1,6 +1,6 @@
 ## Docker Assignment - Agile Software Practice.
 
-__Name:__ ....your name .....
+__Name:__ Clinton Bempah (20097793)
 
 __Demo:__ .... The link to your YouTube demonstration ....
 
