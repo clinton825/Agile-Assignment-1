@@ -11,8 +11,40 @@ This repository contains the containerization setup for a multi-container applic
 
 ### Database Seeding.
 
-[Briefly explain how you automated the seeding of the application's database.]
+For development purposes, the MongoDB database is automatically seeded with sample movie data. The seeding is handled by an initialization script or file which populates the database on startup. This seeding process is excluded in the production environment.
+
+### Running the Application
+To start the application, use Docker Compose:
+
+# docker-compose up --build
+
 
 ### M.ulti-Stack.
+The application supports both development and production stack options, with distinct configurations:
 
-[Briefly explain how you support building development and production stack options.]
+Development Stack: The full stack is deployed, including Mongo Express for MongoDB management and a seeding process to populate the database with sample data.
+
+Production Stack: In production, Mongo Express is not deployed, and no seeding takes place.
+
+### Development Stack
+To run the application in development mode, use the default docker-compose.yml file with all services, including Mongo Express and database seeding enabled.
+
+### Production Stack
+
+For production, run the application without Mongo Express and without seeding. Update the docker-compose.yml file or create an override file (docker-compose.prod.yml) to remove the Mongo Express service and any seeding-related configurations.
+
+# docker-compose --profile dev up --build
+
+### Usage
+
+Once the application is running:
+
+Access the Movies API endpoints via http://localhost:9000
+
+Access Mongo Express for MongoDB administration (development only) at http://localhost:8081.
+
+Redis caching and rate-limiting are applied to the "get all movies" endpoint.
+
+
+
+
